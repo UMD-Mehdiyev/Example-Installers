@@ -9,8 +9,7 @@
 $$ Windows $$
 
 1. In the installers folder, run the `generate_executable.sh` script to create an executable, this will be automatically placed in the windows directory.
-2. Create an `.iss` script through Inno Setup and compile it.
-3. This will output the installer.
+2. Create an `.iss` script through Inno Setup and compile it to create the installer.
 
 $$ MacOS $$
 
