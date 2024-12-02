@@ -1,34 +1,29 @@
 #!/bin/bash
 
 # Define variables
-APP_NAME="example-installer-1.0-mac"  # Name of your app
-APP_EXECUTABLE="./app"  # Path to your app executable
-LICENSE_FILE="../LICENSE.txt"  # Path to your license file
-DMG_NAME="example-installer-1.0-mac.dmg"  # Output DMG file name
-DMG_TEMP="temp-dmg"  # Temporary directory for DMG contents
+APP_NAME="Example Installer"
+DMG_NAME="example-installer-1.0-mac.dmg"
+VOLUME_NAME="Example Installer"
+APP_FOLDER="example-installer-1.0-mac"
 
-# Step 1: Prepare the .app bundle
-mkdir -p "${DMG_TEMP}/${APP_NAME}.app/Contents/MacOS"
-mkdir -p "${DMG_TEMP}/${APP_NAME}.app/Contents/Resources"
+# Create a temporary directory to stage the files
+STAGING_DIR="staging"
+mkdir -p "$STAGING_DIR/$APP_FOLDER"
 
-# Copy executable to the .app bundle
-cp "$APP_EXECUTABLE" "${DMG_TEMP}/${APP_NAME}.app/Contents/MacOS/$APP_NAME"
-chmod +x "${DMG_TEMP}/${APP_NAME}.app/Contents/MacOS/$APP_NAME"
+# Copy the executable and license into the staging directory
+cp ./app "$STAGING_DIR/$APP_FOLDER/"
+cp ../LICENSE.txt "$STAGING_DIR/$APP_FOLDER/"
+ln -s /Applications "$STAGING_DIR/Applications"
 
-# Step 2: Add license to the Resources folder
-cp "$LICENSE_FILE" "${DMG_TEMP}/${APP_NAME}.app/Contents/Resources/LICENSE.txt"
-
-# Step 3: Add the drag-and-drop functionality
-mkdir -p "${DMG_TEMP}/Applications"  # Create a link to the Applications folder
-ln -s /Applications "${DMG_TEMP}/Applications"  # Create symbolic link
-
-# Step 4: Create the DMG file
+# Create the .dmg file
 hdiutil create \
-  -volname "$APP_NAME Installer" \
-  -srcfolder "$DMG_TEMP" \
-  -ov -format UDZO "$DMG_NAME"
+  -volname "$VOLUME_NAME" \
+  -srcfolder "$STAGING_DIR" \
+  -ov \
+  -format UDZO \
+  "$DMG_NAME"
 
-# Step 5: Clean up
-rm -rf "$DMG_TEMP"
+# Clean up the staging directory
+rm -rf "$STAGING_DIR"
 
-echo "DMG created: $DMG_NAME"
+echo "macOS installer created: $DMG_NAME"
