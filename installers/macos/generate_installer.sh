@@ -1,17 +1,20 @@
 #!/bin/bash
 
-# Create the directory structure for the .pkg package
-mkdir -p pkg-root/Applications
+# Define the app name
+APP_NAME="example-installer-1.0-mac.pkg"
 
-# Copy the executable and license to ~/Applications
-cp ./app pkg-root/Applications/
-cp ../LICENSE.txt pkg-root/Applications/
+# Create the directory structure for the .pkg package
+mkdir -p "pkg-root/Applications/$APP_NAME"
+
+# Copy the executable and license to ~/Applications/ExampleApp
+cp ./app "pkg-root/Applications/$APP_NAME/"
+cp ../LICENSE.txt "pkg-root/Applications/$APP_NAME/"
 
 # Build the .pkg package
 pkgbuild --root pkg-root \
     --identifier com.example.installer \
     --version 1.0 \
-    --install-location / \
+    --install-location "/Applications/$APP_NAME" \
     example-installer-1.0-mac.pkg
 
 # Clean up
