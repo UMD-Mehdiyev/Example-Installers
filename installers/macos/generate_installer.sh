@@ -1,30 +1,34 @@
 #!/bin/bash
 
 # Define variables
-APP_NAME="Example Installer.app" # Name of your application as it will appear in the DMG
-DMG_NAME="example-installer-1.0-mac.dmg" # Name of the output DMG file
-VOLUME_NAME="Example Installer" # Name of the DMG volume when mounted
-STAGING_DIR="staging" # Temporary directory for DMG content
+APP_NAME="example-installer-1.0-mac"  # Name of your app
+APP_EXECUTABLE="./app"  # Path to your app executable
+LICENSE_FILE="../LICENSE.txt"  # Path to your license file
+DMG_NAME="example-installer-1.0-mac.dmg"  # Output DMG file name
+DMG_TEMP="temp-dmg"  # Temporary directory for DMG contents
 
-# Create the staging directory
-mkdir -p "$STAGING_DIR/$APP_NAME"
+# Step 1: Prepare the .app bundle
+mkdir -p "${DMG_TEMP}/${APP_NAME}.app/Contents/MacOS"
+mkdir -p "${DMG_TEMP}/${APP_NAME}.app/Contents/Resources"
 
-# Copy your application and license file into the staging directory
-cp ./app "$STAGING_DIR/$APP_NAME/" # Replace ./app with your actual app bundle or executable
-cp ../LICENSE.txt "$STAGING_DIR/$APP_NAME/"
+# Copy executable to the .app bundle
+cp "$APP_EXECUTABLE" "${DMG_TEMP}/${APP_NAME}.app/Contents/MacOS/$APP_NAME"
+chmod +x "${DMG_TEMP}/${APP_NAME}.app/Contents/MacOS/$APP_NAME"
 
-# Create a symbolic link to the Applications folder in the staging directory
-ln -s /Applications "$STAGING_DIR/Applications"
+# Step 2: Add license to the Resources folder
+cp "$LICENSE_FILE" "${DMG_TEMP}/${APP_NAME}.app/Contents/Resources/LICENSE.txt"
 
-# Create the DMG file with drag-and-drop functionality
+# Step 3: Add the drag-and-drop functionality
+mkdir -p "${DMG_TEMP}/Applications"  # Create a link to the Applications folder
+ln -s /Applications "${DMG_TEMP}/Applications"  # Create symbolic link
+
+# Step 4: Create the DMG file
 hdiutil create \
-  -volname "$VOLUME_NAME" \
-  -srcfolder "$STAGING_DIR" \
-  -ov \
-  -format UDZO \
-  "$DMG_NAME"
+  -volname "$APP_NAME Installer" \
+  -srcfolder "$DMG_TEMP" \
+  -ov -format UDZO "$DMG_NAME"
 
-# Clean up the staging directory
-rm -rf "$STAGING_DIR"
+# Step 5: Clean up
+rm -rf "$DMG_TEMP"
 
-echo "macOS installer created: $DMG_NAME"
+echo "DMG created: $DMG_NAME"
