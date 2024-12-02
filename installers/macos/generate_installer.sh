@@ -2,7 +2,6 @@
 
 # Define the app folder name and package name
 NAME="example-installer-1.0-mac.pkg"
-=""
 
 # Create the directory structure for the .pkg package
 mkdir -p "pkg-root/Applications/$NAME"
