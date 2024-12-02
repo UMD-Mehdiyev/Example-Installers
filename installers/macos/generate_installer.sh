@@ -1,23 +1,28 @@
 #!/bin/bash
 
-# Define the app folder name and package name
-NAME="example-installer-1.0-mac.pkg"
+# Define variables
+APP_NAME="Example Installer"
+DMG_NAME="example-installer-1.0-mac.dmg"
+VOLUME_NAME="Example Installer"
+APP_FOLDER="example-installer-1.0-mac"
 
-# Create the directory structure for the .pkg package
-mkdir -p "pkg-root/Applications/$NAME"
+# Create a temporary directory to stage the files
+STAGING_DIR="staging"
+mkdir -p "$STAGING_DIR/$APP_FOLDER"
 
-# Copy the executable and license to ~/Applications/example-installer-1.0-mac.pkg
-cp ./app "pkg-root/Applications/$NAME/"
-cp ../LICENSE.txt "pkg-root/Applications/$NAME/"
+# Copy the executable and license into the staging directory
+cp ./app "$STAGING_DIR/$APP_FOLDER/"
+cp ../LICENSE.txt "$STAGING_DIR/$APP_FOLDER/"
 
-# Build the .pkg package
-pkgbuild --root pkg-root \
-    --identifier com.example.installer \
-    --version 1.0 \
-    --install-location "~/Applications/" \
-    "example-installer-1.0-mac.pkg"
+# Create the .dmg file
+hdiutil create \
+  -volname "$VOLUME_NAME" \
+  -srcfolder "$STAGING_DIR" \
+  -ov \
+  -format UDZO \
+  "$DMG_NAME"
 
-# Clean up
-rm -rf pkg-root
+# Clean up the staging directory
+rm -rf "$STAGING_DIR"
 
-echo "macOS installer created: example-installer-1.0-mac.pkg"
+echo "macOS installer created: $DMG_NAME"
