@@ -11,7 +11,7 @@ cp ../LICENSE.txt pkg-root/Applications/
 pkgbuild --root pkg-root \
     --identifier com.example.installer \
     --version 1.0 \
-    --install-location /Applications \
+    --install-location / \
     example-installer-1.0-mac.pkg
 
 # Clean up
